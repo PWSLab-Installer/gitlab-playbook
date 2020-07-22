@@ -1,6 +1,11 @@
 ---
     - name: Include OS-specific variables.
       include_vars: "{{ ansible_os_family }}.yml"
+
+    -   name: Check the version of OS
+        command: hostnamectl
+        register: os_check
+        ignore_errors: yes 
     
     - name: Check if GitLab configuration file already exists.
       stat: path=/etc/gitlab/gitlab.rb
@@ -38,6 +43,14 @@
       set_fact:
         gitlab_package_name: "{{ gitlab_edition }}{{ gitlab_package_version_separator }}{{ gitlab_version }}"
       when: gitlab_version | default(false)
+
+    -   name: Checking Repo for Ubuntu 20.04
+        replace:
+            dest=/etc/apt/sources.list.d/gitlab_gitlab-ce.list
+            regexp='focal'
+            replace='bionic'
+        when:
+            - os_check.stdout | regex_search("Ubuntu 20")
     
     - name: Install GitLab
       package:
