@@ -8,7 +8,7 @@ gitlab_edition: "gitlab-ce"
 # Mention the latest stable release version 
 gitlab_version: '' 
 # gitlab_backup_path: "/var/opt/gitlab/backups"
-gitlab_config_template: "gitlab-new.rb.j2"
+gitlab_config_template: "gitlab.rb.j2"
 gitlab_update: false
 
 # EMail
