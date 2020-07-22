@@ -26,7 +26,7 @@
     -   set_fact:
             gitlab_domain: "{{ domain_name_result.user_input }}"
             contact_emails: "{{ email_id_result.user_input }}"
-            gitlab_registry_external_url: "{{ domain_name_result.user_input }}"
+            # gitlab_registry_external_url: "{{ domain_name_result.user_input }}"
 
     -   name: Installing GitLab
         include_role:
