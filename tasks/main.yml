@@ -102,4 +102,12 @@
         command: >
             gitlab-ctl reconfigure
         notify: restart gitlab
+
+    -   name: Start GitLab Services.
+        command: >
+            gitlab-ctl start
+
+    -   name: Restart GitLab Services.
+        command: >
+            gitlab-ctl restart
         
