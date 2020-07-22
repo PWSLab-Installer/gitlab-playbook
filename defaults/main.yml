@@ -10,8 +10,8 @@
     
     # SSL Configuration.
     gitlab_redirect_http_to_https: "true"
-    gitlab_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
-    gitlab_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
+    # gitlab_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
+    # gitlab_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
     
     # SSL Self-signed Certificate Configuration.
     gitlab_create_self_signed_cert: "true"

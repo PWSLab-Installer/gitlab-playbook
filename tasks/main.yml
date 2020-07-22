@@ -98,11 +98,6 @@
         mode: 0600
       notify: restart gitlab
 
-    -   name: Stop GitLab Services.
-        command: >
-            gitlab-ctl stop
-
-
     -   name: Reconfigure GitLab (second run).
         command: >
             gitlab-ctl reconfigure
