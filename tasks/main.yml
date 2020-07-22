@@ -52,6 +52,11 @@
         when:
             - os_check.stdout | regex_search("Ubuntu 20")
     
+    -   name: Apt-Update Ubuntu 20.04
+        command: apt update -y
+        when:
+            - os_check.stdout | regex_search("Ubuntu 20")
+
     - name: Install GitLab
       package:
         name: "{{ gitlab_package_name | default(gitlab_edition) }}"
