@@ -1,0 +1,26 @@
+- hosts: localhost
+  connection: local
+  vars:
+    
+
+
+  tasks:
+        
+    -   name: Fetch GitLab Role
+        git:
+            repo: https://ro:vKA_9cGeQbxdHCD5xUr8@pwslab.org/ansible/gitlab-playbook.git
+            dest: /root/.ansible/roles/pwslab.gitlab
+            version: master
+            force: yes
+
+    -   pause:
+            prompt: "Please enter your Domain Name:"
+            echo: yes
+        register: domain_name_result
+
+    -   set_fact:
+            gitlab_domain: "{{ domain_name_result.user_input }}"
+
+    -   name: Installing GitLab
+        include_role:
+            name: pwslab.gitlab
