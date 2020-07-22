@@ -1,115 +1,229 @@
-# The URL through which GitLab will be accessed.
-external_url "{{ gitlab_external_url }}"
+## PWSLab configuration settings
+##! This file is generated during initial installation and **is not** modified
+##! during upgrades.
 
-# gitlab.yml configuration
+external_url "{{ gitlab_external_url }}"
 gitlab_rails['time_zone'] = "{{ gitlab_time_zone }}"
-gitlab_rails['backup_keep_time'] = {{ gitlab_backup_keep_time }}
-gitlab_rails['gitlab_email_enabled'] = {{ gitlab_email_enabled }}
+
+
+### Email Settings
 {% if gitlab_email_enabled == "true" %}
+gitlab_rails['gitlab_email_enabled'] = {{ gitlab_email_enabled }}
 gitlab_rails['gitlab_email_from'] = "{{ gitlab_email_from }}"
+gitlab_rails['gitlab_email_subject_suffix'] = 'PWS'
 gitlab_rails['gitlab_email_display_name'] = "{{ gitlab_email_display_name }}"
 gitlab_rails['gitlab_email_reply_to'] = "{{ gitlab_email_reply_to }}"
 {% endif %}
 
-# Default Theme
-gitlab_rails['gitlab_default_theme'] = "{{ gitlab_default_theme }}"
+### PWSLab user privileges
+gitlab_rails['gitlab_default_can_create_group'] = {{ gitlab_default_can_create_group }}
+# gitlab_rails['gitlab_username_changing_enabled'] = true
 
-# Whether to redirect http to https.
-nginx['redirect_http_to_https'] = {{ gitlab_redirect_http_to_https }}
-# nginx['ssl_certificate'] = "{{ gitlab_ssl_certificate }}"
-# nginx['ssl_certificate_key'] = "{{ gitlab_ssl_certificate_key }}"
+### Default project feature settings
+# gitlab_rails['gitlab_default_projects_features_issues'] = {{ gitlab_default_projects_features_issues }}
+# gitlab_rails['gitlab_default_projects_features_merge_requests'] = {{ gitlab_default_projects_features_merge_requests }}
+# gitlab_rails['gitlab_default_projects_features_wiki'] = {{ gitlab_default_projects_features_wiki }}
+# gitlab_rails['gitlab_default_projects_features_snippets'] = {{ gitlab_default_projects_features_snippets }}
+# gitlab_rails['gitlab_default_projects_features_builds'] = {{ gitlab_default_projects_features_builds }}
+# gitlab_rails['gitlab_default_projects_features_container_registry'] = {{ gitlab_default_projects_features_container_registry }}
 
-# The directory where Git repositories will be stored.
-git_data_dirs({"default" => {"path" => "{{ gitlab_git_data_dir }}"} })
+### Download location
+gitlab_rails['gitlab_repository_downloads_path'] = "{{ gitlab_repository_downloads_path }}"
 
-# The directory where Gitlab backups will be stored
-gitlab_rails['backup_path'] = "{{ gitlab_backup_path }}"
+### Monitoring settings
+###! IP whitelist controlling access to monitoring endpoints
+# gitlab_rails['monitoring_whitelist'] = ['127.0.0.0/8', '::1/128']
+###! Time between sampling of unicorn socket metrics, in seconds
+# gitlab_rails['monitoring_unicorn_sampler_interval'] = {{ monitoring_unicorn_sampler_interval }}
 
-# These settings are documented in more detail at
-# https://gitlab.com/gitlab-org/gitlab-ce/blob/master/config/gitlab.yml.example#L118
-gitlab_rails['ldap_enabled'] = {{ gitlab_ldap_enabled }}
-{% if gitlab_ldap_enabled == "true" %}
-gitlab_rails['ldap_host'] = '{{ gitlab_ldap_host }}'
-gitlab_rails['ldap_port'] = {{ gitlab_ldap_port }}
-gitlab_rails['ldap_uid'] = '{{ gitlab_ldap_uid }}'
-gitlab_rails['ldap_method'] = '{{ gitlab_ldap_method}}' # 'ssl' or 'plain'
-gitlab_rails['ldap_bind_dn'] = '{{ gitlab_ldap_bind_dn }}'
-gitlab_rails['ldap_password'] = '{{ gitlab_ldap_password }}'
-gitlab_rails['ldap_allow_username_or_email_login'] = true
-gitlab_rails['ldap_base'] = '{{ gitlab_ldap_base }}'
+### Job Artifacts
+{% if artifacts_enabled == "true" %}
+# gitlab_rails['artifacts_enabled'] = {{ artifacts_enabled }}
+gitlab_rails['artifacts_path'] = "{{ artifacts_path }}"
 {% endif %}
 
-# GitLab Nginx
-## See https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/nginx.md
-{% if gitlab_nginx_listen_port is defined %}
-nginx['listen_port'] = "{{ gitlab_nginx_listen_port }}"
-{% endif %}
-{% if gitlab_nginx_listen_https is defined %}
-nginx['listen_https'] = {{ gitlab_nginx_listen_https }}
+
+#### Incoming Email Address
+####! The email address including the `%{key}` placeholder that will be replaced
+####! to reference the item being replied to.
+####! **The placeholder can be omitted but if present, it must appear in the
+####!   "user" part of the address (before the `@`).**
+gitlab_rails['incoming_email_address'] = "{{ incoming_email_address }}"
+
+### External merge request diffs
+{% if external_diffs_enabled == "true" %}
+gitlab_rails['external_diffs_enabled'] = true
+# gitlab_rails['external_diffs_when'] = nil
+gitlab_rails['external_diffs_storage_path'] = "{{ external_diffs_storage_path }}"
 {% endif %}
 
-# Use smtp instead of sendmail/postfix
-# More details and example configuration at
-# https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/smtp.md
-gitlab_rails['smtp_enable'] = {{ gitlab_smtp_enable }}
-{% if gitlab_smtp_enable == "true" %}
-gitlab_rails['smtp_address'] = '{{ gitlab_smtp_address }}'
-gitlab_rails['smtp_port'] = {{ gitlab_smtp_port }}
-{% if gitlab_smtp_user_name %}
-gitlab_rails['smtp_user_name'] = '{{ gitlab_smtp_user_name }}'
-{% endif %}
-{% if gitlab_smtp_password %}
-gitlab_rails['smtp_password'] = '{{ gitlab_smtp_password }}'
-{% endif %}
-gitlab_rails['smtp_domain'] = '{{ gitlab_smtp_domain }}'
-{% if gitlab_smtp_authentication %}
-gitlab_rails['smtp_authentication'] = '{{ gitlab_smtp_authentication }}'
-{% endif %}
-gitlab_rails['smtp_enable_starttls_auto'] = {{ gitlab_smtp_enable_starttls_auto }}
-gitlab_rails['smtp_tls'] = {{ gitlab_smtp_tls }}
-gitlab_rails['smtp_openssl_verify_mode'] = '{{ gitlab_smtp_openssl_verify_mode }}'
-gitlab_rails['smtp_ca_path'] = '{{ gitlab_smtp_ca_path }}'
-gitlab_rails['smtp_ca_file'] = '{{ gitlab_smtp_ca_file }}'
+### Git LFS
+# gitlab_rails['lfs_enabled'] = true
+gitlab_rails['lfs_storage_path'] = "{{ lfs_storage_path }}"
+
+### PWSLab uploads
+gitlab_rails['uploads_storage_path'] = "{{ uploads_storage_path }}"
+
+### Usage Statistics
+gitlab_rails['usage_ping_enabled'] = {{ usage_ping_enabled }}
+
+gitlab_rails['backup_path'] = "{{ uploads_storage_path }}"
+gitlab_rails['backup_keep_time'] = {{ backup_keep_time }}
+
+### For setting up different data storing directory
+git_data_dirs({
+  "default" => {
+    "path" => "{{ git_data_path }}"
+   }
+})
+
+### For storing PWSLab application uploads, eg. LFS objects, build artifacts
+gitlab_rails['shared_path'] = "{{ shared_path }}"
+
+### Wait for file system to be mounted
+# high_availability['mountpoint'] = "{{ mountpoint }}"
+
+gitlab_rails['extra_google_analytics_id'] = "{{ extra_google_analytics_id }}"
+
+### PWSLab application settings
+gitlab_rails['uploads_directory'] = "{{ uploads_directory }}"
+
+### PWSLab email server settings
+###! **Use smtp instead of sendmail/postfix.**
+{% if smtp_enable == "true" %}
+gitlab_rails['smtp_enable'] = {{ smtp_enable }}
+gitlab_rails['smtp_address'] = "{{ smtp_address }}"
+gitlab_rails['smtp_port'] = {{ smtp_port }}
+gitlab_rails['smtp_user_name'] = "{{ smtp_user_name }}"
+gitlab_rails['smtp_password'] = "{{ smtp_password }}"
+gitlab_rails['smtp_domain'] = "{{ smtp_domain }}"
+gitlab_rails['smtp_authentication'] = "{{ smtp_authentication }}"
+gitlab_rails['smtp_enable_starttls_auto'] = {{ smtp_enable_starttls_auto }}
+gitlab_rails['smtp_tls'] = {{ smtp_tls }}
 {% endif %}
 
-# 2-way SSL Client Authentication.
-{% if gitlab_nginx_ssl_verify_client %}
-nginx['ssl_verify_client'] = "{{ gitlab_nginx_ssl_verify_client }}"
-{% endif %}
-{% if gitlab_nginx_ssl_client_certificate %}
-nginx['ssl_client_certificate'] = "{{ gitlab_nginx_ssl_client_certificate }}"
-{% endif %}
+gitlab_ci['builds_directory'] = "{{ builds_directory }}"
 
-# GitLab registry.
-registry['enable'] = {{ gitlab_registry_enable }}
-{% if gitlab_registry_enable %}
-registry_external_url "{{ gitlab_registry_external_url }}"
-registry_nginx['ssl_certificate'] = "{{ gitlab_registry_nginx_ssl_certificate }}"
-registry_nginx['ssl_certificate_key'] = "{{ gitlab_registry_nginx_ssl_certificate_key }}"
-{% endif %}
+{% if registry_enabled == "true" %}
+################################################################################
+## Container Registry settings
+################################################################################
 
-{% if gitlab_extra_settings is defined %}
-# Extra configuration
-{% for extra in gitlab_extra_settings %}
-{% for setting in extra %}
-{% for kv in extra[setting] %}
-{% if (kv.type is defined and kv.type == 'plain') or (kv.value is not string) %}
-{{ setting }}['{{ kv.key }}'] = {{ kv.value }}
-{% else %}
-{{ setting }}['{{ kv.key }}'] = '{{ kv.value }}'
-{% endif %}
-{% endfor %}
-{% endfor %}
+registry_external_url 'https://hub.{{ gitlab_domain }}'
 
-{% endfor %}
+### Settings used by PWSLab application
+gitlab_rails['registry_enabled'] = {{ registry_enabled }}
+gitlab_rails['registry_host'] = "hub.{{ gitlab_domain }}"
+# gitlab_rails['registry_port'] = "5005"
+gitlab_rails['registry_path'] = "/pwslab/pwsdata/gitlab-rails/shared/registry"
+
+### Settings used by Registry application
+# registry['enable'] = true
+# registry['storage_delete_enabled'] = true
+registry['dir'] = "/pwslab/pwsdata/registry"
 {% endif %}
 
-# To change other settings, see:
-# https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md#changing-gitlab-yml-settings
 
+################################################################################
+## Registry NGINX
+################################################################################
+#registry_nginx['enable'] = true
+#registry_nginx['redirect_http_to_https'] = true
+
+
+
+###! Changing any of these settings requires a restart of postgresql.
+###! By default, reconfigure reloads postgresql if it is running. If you
+###! change any of these settings, be sure to run `gitlab-ctl restart postgresql`
+###! after reconfigure in order for the changes to take effect.
+# postgresql['enable'] = true
+# postgresql['listen_address'] = nil
+# postgresql['port'] = 5432
+#postgresql['data_dir'] = "/pwslab/pwsdata/postgresql/data"
+
+##! **recommend value is 1/4 of total RAM, up to 14GB.**
+postgresql['shared_buffers'] = "{{ shared_buffers }}"
+
+################################################################################
+## PWSLab Redis
+################################################################################
+
+# redis['enable'] = true
+# redis['ha'] = false
+# redis['hz'] = 10
+# redis['dir'] = "/pwslab/pwsdata/redis"
+
+################################################################################
+## PWSLab NGINX
+################################################################################
+
+nginx['enable'] = true
+# web_server['external_users'] = ['www-data']
+# nginx['client_max_body_size'] = "{{ client_max_body_size }}"
+# nginx['redirect_http_to_https'] = true
+# nginx['redirect_http_to_https_port'] = 80
+
+# Example: include a directory to scan for additional config files
+nginx['custom_nginx_config'] = "include /pwslab/pwsconfig/nginx/sites-available/*;"
+
+# nginx['ssl_certificate'] = "/etc/gitlab/ssl/#{node['fqdn']}.crt"
+# nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/#{node['fqdn']}.key"
+# nginx['ssl_ciphers'] = "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256"
+# nginx['ssl_prefer_server_ciphers'] = "on"
+
+{% if pages_enable == "true" %}
+################################################################################
+## PWSLab Pages
+################################################################################
+
+##! Define to enable PWSLab Pages
+pages_external_url "https://pages.{{ gitlab_domain }}"
+gitlab_pages['enable'] = {{ pages_enable }}
+gitlab_pages['redirect_http'] = true
+gitlab_rails['pages_path'] = "/pwslab/pwsdata/shared/pages"
+
+##! Pages access control
+gitlab_pages['access_control'] = true
+{% endif %}
+
+################################################################################
+## Prometheus
+################################################################################
+# monitoring_role['enable'] = true
+prometheus['enable'] = {{ prometheus_enable }}
+prometheus['home'] = "{{ prometheus_home }}"
+prometheus['rules_files'] = ["{{ prometheus_rules_files }}"]
+
+alertmanager['admin_email'] = "{{ admin_email }}"
+
+
+##! The home directory for the git user
+user['git_user_name'] = "{{ git_user_name }}"
+user['git_user_email'] = "pwslab@#{node['fqdn']}"
+
+################################################################################
+# Let's Encrypt integration
+################################################################################
 letsencrypt['enable'] = {{ letsencrypt_enable }}
 letsencrypt['contact_emails'] = ["{{ contact_emails }}"] # This should be an array of email addresses to add as contacts
 letsencrypt['auto_renew'] = {{ letsencrypt_auto_renew }}
 letsencrypt['auto_renew_hour'] = {{ letsencrypt_auto_renew_hour }}
 letsencrypt['auto_renew_minute'] = {{ letsencrypt_auto_renew_minute }} # Should be a number or cron expression, if specified.
 letsencrypt['auto_renew_day_of_month'] = "{{ letsencrypt_auto_renew_day_of_month }}"
+
+# Custom NGINX config for rendering Job artifacts
+# nginx['custom_gitlab_server_config'] = "include /pwslab/pwsdata/pwslab/nginx-tweaks.conf;"
+
+{% if mattermost_gitlab_enable == "true" %}
+
+################################################################################
+## GitLab Mattermost
+##! Docs: https://docs.gitlab.com/omnibus/gitlab-mattermost
+################################################################################
+
+mattermost_external_url 'https://{{ mattermost_external_url }}'
+mattermost_nginx['redirect_http_to_https'] = true
+
+{% endif %}
+
+####################################################################################################################################
